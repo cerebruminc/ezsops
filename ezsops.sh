@@ -87,11 +87,11 @@ ezsops_encrypt() {
 
 ezsops () {
 if [ "$1" = "encrypt" ]; then
-  sops_encrypt "${@:2}"
+  ezsops_encrypt "${@:2}"
 fi
 
 if [ "$1" = "decrypt" ]; then
-  sops_decrypt "${@:2}"
+  ezsops_decrypt "${@:2}"
 fi
 }
 
