@@ -1,0 +1,10 @@
+{
+    "name": "ezsops",
+    "version": "0.0.1",
+    "description": "Easy Sops Utilities",
+    "global": true,
+    "scripts": [
+        "ezsops.sh"
+    ],
+    "install": "make install"
+}
