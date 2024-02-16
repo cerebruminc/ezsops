@@ -14,7 +14,7 @@ To install EZSops, you can use `bpkg`, a bash package manager. If you don't have
 Once `bpkg` is installed, run the following command:
 
 ```sh
-bpkg install ezsops
+bpkg install cerebruminc/ezsops
 ```
 
 ## Usage
