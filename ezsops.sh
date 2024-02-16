@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 ezsops_decrypt() {
   if [ -z "$1" ]; then
     echo "Usage: decrypt_sops <path/to/sops.filename.yml>"
