@@ -7,6 +7,13 @@ It helps avoid many of the pitfalls of using `sops` directly, and introduces muc
 - Detects if the file was not correctly encrypted
 - Automatically sets the output file name
 
+## Prerequisites
+
+EZSops requires the following tools to be installed:
+
+- SOPS: https://getsops.io/
+- yq: https://mikefarah.gitbook.io/yq/
+
 ## Installation
 
 To install EZSops, you can use `bpkg`, a bash package manager. If you don't have `bpkg` installed, you can find instructions at https://bpkg.sh/.
