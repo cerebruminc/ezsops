@@ -1,0 +1,31 @@
+name: Update bpkg.json Version
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Extract version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+      - name: Update bpkg.json
+        uses: mikefarah/yq@v4
+        with:
+          cmd: yq eval '.version = strenv(VERSION)' -i bpkg.json
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+          git add bpkg.json
+          git commit -m "Update bpkg.json version to ${{ env.VERSION }}"
+          git push
