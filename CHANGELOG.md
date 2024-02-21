@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/cerebruminc/ezsops/compare/v1.0.1...v1.0.2) (2024-02-21)
+
+
+### Bug Fixes
+
+* patch bug where layout breaks if a space is used in kms label ([8d076c9](https://github.com/cerebruminc/ezsops/commit/8d076c9e33b06cf53a492b510a80ddc0740d72bf))
+
 ## [1.0.1](https://github.com/cerebruminc/ezsops/compare/v1.0.0...v1.0.1) (2024-02-21)
 
 
