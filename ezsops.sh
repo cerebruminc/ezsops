@@ -98,18 +98,19 @@ ezsops_encrypt() {
   done
 
   if [ "$use_existing_key" = "y" ]; then
-    options=($(awk -F'\t' '{print $1 "\t" $2 "\t" $3}' "${kms_file}"))
+    IFS=$'\n' options=($(awk -F'\t' '{print $1 "\t" $2 "\t" $3}' "${kms_file}"))
     echo "Select a KMS ARN:"
-    printf "%-4s | %-12s | %-50s | %-20s\n" "No." "Date" "ARN" "Label"
-    echo "--------------------------------------------------------------------------------------------"
+    printf "%-4s | %-12s | %-75s | %-20s\n" "No." "Date" "ARN" "Label"
+    echo "---------------------------------------------------------------------------------------------------------------"
     index=1
-    for ((i = 0; i < ${#options[@]}; i += 3)); do
-      printf "%-4d | %-12s | %-50s | %-20s\n" "${index}" "${options[i]}" "${options[i+1]}" "${options[i+2]}"
+    for option in "${options[@]}"; do
+      IFS=$'\t' read -r date arn label <<< "$option"
+      printf "%-4d | %-12s | %-75s | %-20s\n" "${index}" "${date}" "${arn}" "${label}"
       index=$((index + 1))
     done
     echo -n "Enter the number of the KMS ARN: "
     read -r choice
-    kms_arn="${options[((choice - 1) * 3 + 1)]}"
+    IFS=$'\t' read -r selected_date kms_arn selected_label <<< "${options[((choice - 1))]}"
   else
     echo -n "Enter new KMS ARN: "
     read -r new_kms_arn
