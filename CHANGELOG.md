@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/cerebruminc/ezsops/compare/v1.0.0...v1.0.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* if no recognized command is provided, show help ([#4](https://github.com/cerebruminc/ezsops/issues/4)) ([87a628f](https://github.com/cerebruminc/ezsops/commit/87a628f25bc1cf0d66fd0c6919159f71684f95be))
+
 ## 1.0.0 (2024-02-21)
 
 
