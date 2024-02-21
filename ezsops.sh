@@ -23,7 +23,7 @@ log_verbose() {
 
 ezsops_decrypt() {
   if [ -z "$1" ]; then
-    echo "Usage: decrypt_sops <path/to/sops.filename.yml>"
+    echo "Usage: ezsops decrypt <path/to/sops.filename.yml>"
     return 1
   fi
 
@@ -43,7 +43,7 @@ ezsops_decrypt() {
 
 ezsops_encrypt() {
   if [ -z "$1" ]; then
-    echo "Usage: encrypt_sops <path/to/filename.yml>"
+    echo "Usage: ezsops encrypt <path/to/filename.yml>"
     return 1
   fi
 
@@ -138,10 +138,11 @@ ezsops_encrypt() {
 ezsops () {
 if [ "$1" = "encrypt" ]; then
   ezsops_encrypt "${@:2}"
-fi
-
-if [ "$1" = "decrypt" ]; then
+elif [ "$1" = "decrypt" ]; then
   ezsops_decrypt "${@:2}"
+else
+  echo "Usage: ezsops <encrypt|decrypt> [args]"
+  return 1
 fi
 }
 
