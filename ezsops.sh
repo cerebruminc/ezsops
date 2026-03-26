@@ -123,17 +123,34 @@ ezsops_encrypt() {
 
   if [ "$use_existing_key" = "y" ]; then
     IFS=$'\n' options=($(awk -F'\t' '{print $1 "\t" $2 "\t" $3}' "${kms_file}"))
+    if [ ${#options[@]} -eq 0 ]; then
+      echo "Error: No pre-existing KMS keys were found in '${kms_file}'."
+      return 1
+    fi
+
     echo "Select a KMS ARN:"
     printf "%-4s | %-12s | %-75s | %-20s\n" "No." "Date" "ARN" "Label"
     echo "---------------------------------------------------------------------------------------------------------------"
     index=1
     for option in "${options[@]}"; do
       IFS=$'\t' read -r date arn label <<< "$option"
+      if [ -z "${date}" ] || [ -z "${arn}" ] || [ -z "${label}" ]; then
+        echo "Error: Invalid KMS entry found in '${kms_file}'."
+        return 1
+      fi
       printf "%-4d | %-12s | %-75s | %-20s\n" "${index}" "${date}" "${arn}" "${label}"
       index=$((index + 1))
     done
     echo -n "Enter the number of the KMS ARN: "
     read -r choice
+    if ! [[ "${choice}" =~ ^[0-9]+$ ]]; then
+      echo "Error: Invalid selection '${choice}'."
+      return 1
+    fi
+    if [ "${choice}" -lt 1 ] || [ "${choice}" -gt ${#options[@]} ]; then
+      echo "Error: Selection '${choice}' is out of range."
+      return 1
+    fi
     IFS=$'\t' read -r selected_date kms_arn selected_label <<< "${options[((choice - 1))]}"
   else
     echo -n "Enter new KMS ARN: "
@@ -151,6 +168,11 @@ ezsops_encrypt() {
     current_date=$(date "+%Y-%m-%d")
     echo -e "${current_date}\t${new_kms_arn}\t${new_label}" >> "${kms_file}"
     kms_arn="${new_kms_arn}"
+  fi
+
+  if [ -z "${kms_arn}" ]; then
+    echo "Error: No KMS ARN was selected."
+    return 1
   fi
 
   log_verbose "Using KMS ARN: ${kms_arn}"
