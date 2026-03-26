@@ -91,7 +91,7 @@ ezsops_encrypt() {
 
   # Extract top-level keys using yq and check against regex
   # This is done with process substitution to avoid creating a subshell, allowing us to correctly set `match_found`
-  while read key; do
+  while read -r key; do
     if [[ $key =~ $regex ]]; then
       log_verbose "Found a top-level key matching the encryption pattern: $key"
       match_found=1
@@ -122,7 +122,10 @@ ezsops_encrypt() {
   done
 
   if [ "$use_existing_key" = "y" ]; then
-    IFS=$'\n' options=($(awk -F'\t' '{print $1 "\t" $2 "\t" $3}' "${kms_file}"))
+    options=()
+    while IFS= read -r option; do
+      options+=("${option}")
+    done < <(awk -F'\t' '{print $1 "\t" $2 "\t" $3}' "${kms_file}")
     if [ ${#options[@]} -eq 0 ]; then
       echo "Error: No pre-existing KMS keys were found in '${kms_file}'."
       return 1
@@ -151,7 +154,7 @@ ezsops_encrypt() {
       echo "Error: Selection '${choice}' is out of range."
       return 1
     fi
-    IFS=$'\t' read -r selected_date kms_arn selected_label <<< "${options[((choice - 1))]}"
+    IFS=$'\t' read -r _ kms_arn _ <<< "${options[((choice - 1))]}"
   else
     echo -n "Enter new KMS ARN: "
     read -r new_kms_arn
@@ -200,7 +203,7 @@ else
 fi
 }
 
-if [[ ${BASH_SOURCE[0]} != $0 ]]; then
+if [[ ${BASH_SOURCE[0]} != "$0" ]]; then
   export -f ezsops
 else
   ezsops "${@}"
