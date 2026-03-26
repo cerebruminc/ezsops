@@ -21,11 +21,20 @@ log_verbose() {
   fi
 }
 
+require_command() {
+  if ! command -v "$1" >/dev/null 2>&1; then
+    echo "Error: Required command '$1' is not installed or not in PATH."
+    return 1
+  fi
+}
+
 ezsops_decrypt() {
   if [ -z "$1" ]; then
     echo "Usage: ezsops decrypt <path/to/sops.filename.yml>"
     return 1
   fi
+
+  require_command "sops" || return 1
 
   encrypted_file="$1"
 
@@ -37,7 +46,15 @@ ezsops_decrypt() {
   decrypted_file="${encrypted_file%.*}.yml"
   decrypted_file="${decrypted_file/sops./}"
 
-  sops -d "${encrypted_file}" > "${decrypted_file}"
+  decrypted_tmp_file="$(mktemp "${decrypted_file}.tmp.XXXXXX")"
+
+  if sops -d "${encrypted_file}" > "${decrypted_tmp_file}"; then
+    mv "${decrypted_tmp_file}" "${decrypted_file}"
+  else
+    rm -f "${decrypted_tmp_file}"
+    return 1
+  fi
+
   echo "Decrypted '${encrypted_file}' to '${decrypted_file}'"
 }
 
@@ -46,6 +63,9 @@ ezsops_encrypt() {
     echo "Usage: ezsops encrypt <path/to/filename.yml>"
     return 1
   fi
+
+  require_command "sops" || return 1
+  require_command "yq" || return 1
 
   decrypted_file="$1"
   encrypted_dir="${decrypted_file%/*}"
@@ -135,7 +155,14 @@ ezsops_encrypt() {
 
   log_verbose "Using KMS ARN: ${kms_arn}"
 
-  sops -e --kms "${kms_arn}" --encrypted-regex "${regex}" "${decrypted_file}" > "${encrypted_file}"
+  encrypted_tmp_file="$(mktemp "${encrypted_file}.tmp.XXXXXX")"
+
+  if sops -e --kms "${kms_arn}" --encrypted-regex "${regex}" "${decrypted_file}" > "${encrypted_tmp_file}"; then
+    mv "${encrypted_tmp_file}" "${encrypted_file}"
+  else
+    rm -f "${encrypted_tmp_file}"
+    return 1
+  fi
 
   echo "Encrypted '${decrypted_file}' to '${encrypted_file}' using KMS ARN '${kms_arn}'"
 }
