@@ -48,8 +48,12 @@ ezsops_encrypt() {
   fi
 
   decrypted_file="$1"
-  encrypted_file="${decrypted_file%.*}.yml"
-  encrypted_file="sops.${decrypted_file##*/}"
+  encrypted_dir="${decrypted_file%/*}"
+  if [ "${encrypted_dir}" = "${decrypted_file}" ]; then
+    encrypted_file="sops.${decrypted_file##*/}"
+  else
+    encrypted_file="${encrypted_dir}/sops.${decrypted_file##*/}"
+  fi
 
   log_verbose "Encrypting file: ${decrypted_file}"
   log_verbose "Destination file: ${encrypted_file}"
