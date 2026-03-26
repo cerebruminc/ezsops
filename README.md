@@ -32,3 +32,13 @@ EZSops provides two commands: `encrypt` and `decrypt`. Both commands take a sing
 ezsops encrypt secret.yml
 ezsops decrypt sops.secret.yml
 ```
+
+## Development
+
+Run the automated test suite with:
+
+```sh
+make test
+```
+
+The tests use `bats-core` and stub `sops`/`yq`, so they do not require AWS or a real KMS environment.
